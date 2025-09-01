@@ -89,6 +89,7 @@ fun main() { // 최상위 함수
 - [코틀린 놀이터](https://play.kotlinlang.org/)
 - 인텔리제이에서 Convert Java File to Kotlin File을 선택하면 자바 코드를 코틀린으로 대체 가능
 - 코틀린 JVM 빌드 과정
+<img width="889" height="382" alt="스크린샷 2025-08-26 오전 1 26 41" src="https://github.com/user-attachments/assets/ae735730-2777-4a06-bdb6-a58fe5e7d108" />
 
 # 요약
 
