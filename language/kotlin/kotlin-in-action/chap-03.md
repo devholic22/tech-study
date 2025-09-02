@@ -90,6 +90,8 @@ fun main() {
 
 위의 설명에 기술하였듯이, 확장 함수는 선언이 클래스의 밖에 되어 있다. 따라서 아래 그림처럼, View와 Button 클래스의 밖에 따로 따로 정의되기 때문에 재정의가 먹히지 않는다.
 
+<img width="659" height="285" alt="스크린샷 2025-09-02 오후 10 32 57" src="https://github.com/user-attachments/assets/674e7bcc-5957-4982-a0e2-3b174b02aeda" />
+
 ```kotlin
 // Kotlin
 open class View
