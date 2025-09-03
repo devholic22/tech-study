@@ -1,6 +1,6 @@
 # 3장: 함수 정의와 호출
 
-# 3.1 코틀린에서 컬렉션 만들기
+## 3.1 코틀린에서 컬렉션 만들기
 
 ```kotlin
 // Set
@@ -23,7 +23,7 @@ sets.sum() // 합계
 - 코틀린은 표준 자바 컬렉션 클래스를 사용 → 코틀린, 자바 간 호출 시 서로 변환할 필요 없음
 - 코틀린 컬렉션은 자바 컬렉션보다 더 많은 기능을 제공함
 
-# 3.2 함수를 호출하기 쉽게 만들기
+## 3.2 함수를 호출하기 쉽게 만들기
 
 ### 함수의 이름 인자 전달과 기본값 지정
 
@@ -68,7 +68,7 @@ const val UNIX_LINE_SEPARATOR = "\n"
 public static final String UNIX_LINE_SEPARATOR = "\n";
 ```
 
-# 3.3 메서드를 다른 클래스에 추가: 확장 함수와 확장 프로퍼티
+## 3.3 메서드를 다른 클래스에 추가: 확장 함수와 확장 프로퍼티
 
 코틀린에서는 특정 함수를 특정 클래스의 멤버 함수로써 호출할 수 있는 (선언은 클래스의 밖에 되어있는) 기능이 있다. 이는 기존 코드와 코틀린 코드를 자연스럽게 통합할 수 있도록 도와준다. 이를 확장 함수라 한다.
 
@@ -138,11 +138,113 @@ var StringBuilder.lastChar: Char
 ```
 
 자바에서는 StringUtilKt.getLastChar(”Java”), StringUtilKt.setLastChar(sb, ‘!’) 처럼 게터/세터를 명시적으로 호출해야 한다.
-# 3.4 컬렉션 처리: 가변 길이 인자, 중위 함수 호출, 라이브러리 지원
 
-# 3.5 문자열과 정규식 다루기
+## 3.4 컬렉션 처리: 가변 길이 인자, 중위 함수 호출, 라이브러리 지원
 
-# 3.6 코드 깔끔하게 다듬기: 로컬 함수와 확장
+코틀린의 listOf를 보면, 가변 인자를 다루기 위해서는 vararg를 쓰면 된다는 것을 볼 수 있다.
+
+```kotlin
+fun listOf<T>(vararg values: T): List<T> { /* 구현 */
+```
+
+Map 을 선언할 때는 중위 호출을 사용할 수 있다. 아래 코드의 “to” 에 해당한다.
+
+```kotlin
+val maps = mapOf(1 to "one", 7 to "seven")
+```
+
+중위 호출 시에는 수신 객체 뒤에 메서드 이름을 위치시키고 그 뒤에 유일한 메서드 인자를 넣는다.
+
+```kotlin
+1.to("one") // 방법 1
+1 to "one" // 방법 2
+```
+
+인자가 하나만 있는 일반 메서드 / 확장 함수에만 중위 호출을 적용할 수 있다. (infix를 붙여야 함)
+
+```kotlin
+infix fun Any.to(other: Any) = Pair(this, other)
+infix fun Int.times(str: String) = str.repeat(this)
+
+// 사용 예 1
+val result1 = 1 to "one" // Pair(1, "one")
+val (number, name) = 1 to "one" // 구조 분해 선언
+
+// 사용 예 2
+val result3 = 2 times "Bye " // Bye Bye
+```
+
+## 3.5 문자열과 정규식 다루기
+
+코틀린에서는 문자열 정규식을 다루는 확장 함수들이 존재한다. 대표적으로 split 함수가 있다.
+
+자바에서는 split(”.”)을 할 때 정규식으로 취급되어 모든 문자를 나타내는 정규식으로 해석되는 것 하나만 있지만,
+
+코틀린에서는 더 편하게 쓸 수 있도록 인자의 타입에 따라 정규식으로 이용하거나 일반 문자열로 이용하거나 선택할 수 있다.
+
+```kotlin
+fun main() {
+    println("12.345-6.A".split("\\.|-".toRegex())) // 정규식 명시적 전달
+}
+```
+
+코틀린의 trimIndent를 쓰면 HTML, JSON 등을 쉽게 표현할 수 있다.
+
+```kotlin
+val expectedObject = """
+    {
+        "name": "Sebastian",
+        "age": 27,
+        "homeTown": "Munich"
+    }
+""".trimIndent()
+```
+
+## 3.6 코드 깔끔하게 다듬기: 로컬 함수와 확장
+
+로컬 함수를 이용하면 코드 중복을 쉽게 제거할 수 있다. 로컬 함수란 함수 안에 함수를 둘 수 있는 방법이다.
+
+```kotlin
+class User(val id: Int, val name: String, val address: String)
+
+// Before
+fun saveUser(user: User) {
+    if (user.name.isEmpty()) {
+        throw IllegalArgumentException(...)
+    }
+    if (user.address.isEmpty()) {
+        throw IllegalArgumentException(...)
+    }
+
+    // user 저장
+}
+
+// After
+fun saveUser(user: User) {
+    fun validate(value: String, fieldName: String) { // 자신 바깥의 객체 이용 가능
+        if (value.isEmpty()) {
+            throw IllegalArgumentException(...)
+        }
+    }
+    validate(user.name, "Name")
+    validate(user.address, "Address")
+
+    // user 저장
+}
+
+// 확장 함수 이용 가능
+fun User.validateBeforeSave() {
+    fun validate(value: String, fieldName: String) {
+        if (value.isEmpty()) { // User 프로퍼티 이용 가능
+            throw IllegalArgumentException(...)
+        }
+    }
+    validate(name, "Name")
+    validate(address, "address")
+}
+```
+
+그러나 내포된 함수의 깊이가 깊어지면 코드를 읽기가 어려워지므로 일반적으로는 한 단계까지만 함수를 내포하는 걸 권장한다.
 
 # 요약
 - 코틀린은 자체 컬렉션 클래스를 정의하지 않지만 자바 클래스를 확장해서 더 풍부한 API를 제공한다.
